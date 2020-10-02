@@ -25,13 +25,35 @@ int email( char *nom_servidor, char *email_destinatari, char *email_remitent, ch
 int main(int argc, char *argv[])
 {
 
-	char nom_servidor[32] = "172.20.0.21"; //Adreça IP per accedir al server
+	/*char nom_servidor[32] = "172.20.0.21"; //Adreça IP per accedir al server
 	char email_destinatari[REPLY_MSG_SIZE] = "1458570@campus.euss.org"; //Email del destinatari
 	char email_remitent[REPLY_MSG_SIZE] = "afontquerni@euss.es"; //Email del remitent
 	char text_email[REPLY_MSG_SIZE] = "\nMail de prova\n\nSalutacions,\n\nToni Vives Cabaleiro."; //Text del email.
 	
-	email(nom_servidor, email_destinatari, email_remitent, text_email);
+	email(nom_servidor, email_destinatari, email_remitent, text_email);*/
 
+while(1){
+		char nom_servidor[32] = "172.20.0.21"; //Adreça IP per accedir al server
+		char email_destinatari[REPLY_MSG_SIZE] ; //Email del destinatari
+		char email_remitent[REPLY_MSG_SIZE] ; //Email del remitent
+		//char text_email[REPLY_MSG_SIZE]; //Text del email.
+		char text_email[REPLY_MSG_SIZE] = "\nMail de prova\n\nSalutacions,\n\nToni Vives Cabaleiro."; //Text del email.
+
+		//printf("Entri el nom del servidor al que es vol connectar: ");
+		//scanf("%s", &nom_servidor);
+		//printf("\n");
+		printf("Entri el email del destinatari del correu:\n");
+		scanf("%s", &email_destinatari);
+		printf("\n");
+		printf("Entri el email del remitent del correu:\n");
+		scanf("%s", &email_remitent);
+		printf("\n");
+		//printf("Entri el text que vol enviar:\n");
+		//scanf("%s", &text_email);
+		//printf("\n");
+		email(nom_servidor, email_destinatari, email_remitent, text_email);
+
+	}
 
 	return 0;
 }
