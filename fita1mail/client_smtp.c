@@ -33,15 +33,15 @@ int main(int argc, char *argv[])
 	email(nom_servidor, email_destinatari, email_remitent, text_email);*/
 
 while(1){
-		char nom_servidor[32] = "172.20.0.21"; //Adreça IP per accedir al server
+		char nom_servidor[32]; //Adreça IP per accedir al server
 		char email_destinatari[REPLY_MSG_SIZE] ; //Email del destinatari
 		char email_remitent[REPLY_MSG_SIZE] ; //Email del remitent
 		//char text_email[REPLY_MSG_SIZE]; //Text del email.
 		char text_email[REPLY_MSG_SIZE] = "\nMail de prova\n\nSalutacions,\n\nToni Vives Cabaleiro."; //Text del email.
 
-		//printf("Entri el nom del servidor al que es vol connectar: ");
-		//scanf("%s", &nom_servidor);
-		//printf("\n");
+		printf("Entri el nom del servidor al que es vol connectar: ");
+		scanf("%s", &nom_servidor);
+		printf("\n");
 		printf("Entri el email del destinatari del correu:\n");
 		scanf("%s", &email_destinatari);
 		printf("\n");
