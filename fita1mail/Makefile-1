@@ -1,0 +1,9 @@
+all: client
+	
+
+client: client_smtp.c client_smtp.o
+	gcc client_smtp.c -o client_smtp
+	./client_smtp
+
+clean:
+	rm -rf *o client
