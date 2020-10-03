@@ -1,0 +1,9 @@
+all: web
+	
+
+web: web_client.c
+	gcc web_client.c -o web_client
+	./web_client
+
+clean:
+	rm -rf *o web
