@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	char nom_servidor[32];
 	char email_destinatari[REPLY_MSG_SIZE]; 				//Email al que volem que arribin els correus.
 	char email_remitent[REPLY_MSG_SIZE]; 					//Email remitent dels correus.
-	char text_email[REPLY_MSG_SIZE] = "Hola soc un mail de prova .\n\n Atentament,\n Toni Vives Cabaleiro."; 	//Text del email.	
+	char text_email[REPLY_MSG_SIZE] = "Hola soc un mail de prova automàtic .\n\n Atentament,\n Toni Vives Cabaleiro."; 	//Text del email.	
 
 
 	int opt= 0;
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     
     printf("Aquest codi està generant un email accedint des del terminal on les dades estàn organitzades de la següent manera:\n");
     printf("./client -s 172.20.0.21 -o mailfals@euss.es -d 1458570@campus.euss.org");
-    delay(3000);
+    delay(5000);
     system("cls");
     printf("Servidor: %s, Destinatari: %s, Remitent: %s.\n", nom_servidor, email_destinatari, email_remitent);
 
