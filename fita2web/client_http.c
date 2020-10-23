@@ -39,7 +39,7 @@ int main(int argc, char **argv)
             {0,         0,                 0,  0 }
         };
 
-       opc = getopt_long(argc, argv, "abc:d:012",
+       opc = getopt_long(argc, argv, "s:r:",
                  long_options, &option_index);
         if (opc == -1)
             break;
@@ -54,11 +54,10 @@ int main(int argc, char **argv)
             strcpy(cadena_URI,optarg);
             break;
 
-       case '?':
-            break;
 
        default:
             printf("?? getopt returned character code 0%o ??\n", opc);
+            break;
         }
     }
 
