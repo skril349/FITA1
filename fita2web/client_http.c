@@ -78,11 +78,11 @@ int http_get (char *nom_servidor, char *cadena_URI, char *resposta_header, char 
 	int			sockAddrSize;
 	int			sFd;
 	int 		result;
-	char		buffer[4256];
+	char		buffer[8512];
 	char		missatge[64];
 	
 	sprintf(serverName,"%s",nom_servidor);
-	sprintf(missatge,"GET / HTTP/1.1\r\nHost: /%s\r\n\r\n",cadena_URI);
+	sprintf(missatge,"GET %s HTTP/1.1\r\nHost: %s\r\n\r\n",cadena_URI,nom_servidor);
 
 	/*Crear el socket*/
 	sFd=socket(AF_INET,SOCK_STREAM,0);
