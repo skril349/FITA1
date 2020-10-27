@@ -1,0 +1,10 @@
+all: mail
+
+mail: client_mail.o
+	gcc client_mail.o -o mail
+	
+client_mail.o: client_mail.c
+	gcc -c client_mail.c
+	
+clean:
+	rm -rf *o mail
