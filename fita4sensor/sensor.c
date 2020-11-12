@@ -1,17 +1,38 @@
-/*
- *  S.Bernadas 2018
- *  Raspberry Pi I2C interface demo for ADC ADS1015
- *  The board attached is Automation HAT
+/**
+ * @brief Programa de lectura d'una base de dades
  * 
- *  sudo raspi-config --> advanced options --> enable i2c
- *
- *  sudo apt-get install libi2c-dev i2c-tools
- *
- *  Then build with:
- *
- *       gcc -Wall sensor.c -o sensor
- *
+ * Programa que llegeix la informació d'un sensor de temperatura i la publica
+ * en la base de dades.
+ * 
+ * @code
+ * ~$ gcc informe.c -o informe
+ * ~$ ./informe
+ * @endcode
+ * 
+ * El programa penja a la base de dades els valors obtinguts del sensor de
+ * temperatura.
+ * 
+ * @file sensor.c
+ * @author Toni Vives Cabaleiro
+ * @version Fita4
+ * @date 03/11/2020
+ * 
+ * @param - No n'hi ha
+ * @return 0 Si està ok
+ * 
+ * @todo Pròximes fites
+ * 
+ * @section LICENSE
+ * This program is free software; you can redistribute it and/or modify  *
+ * it under the terms of the GNU General Public License as published by  *
+ * the Free Software Foundation; either version 2 of the License, or     *
+ * (at your option) any later version.         
  */
+ 
+  //gcc informe_txt.c -lsqlite3 -o informe
+ //./informe
+
+
 
 #include <stdio.h>
 #include <stdint.h>
@@ -21,6 +42,7 @@
 #include <fcntl.h>
 #include <time.h> 
 #include <sqlite3.h>
+#include <string.h>
 
 #define DEV_ID 0x48
 #define DEV_PATH "/dev/i2c-1"
@@ -38,6 +60,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName)
 	return(0);
 }
 
+
 void delay(int number_of_seconds) 
 { 
     // Converting time into milli_seconds 
@@ -52,16 +75,18 @@ void delay(int number_of_seconds)
 }
 
 
-int main(int argc, char **argv)
-{
+
+int main(void) {
+    
     sqlite3 *db;
-    char *zErrMsg = 0;
+    char *err_msg = 0;
     int fd = 0;
     uint8_t adc_l=0, adc_h=0;
     uint16_t adc_out = 0;
     int adc_ok=0;
     double adc_v = 0.0;
-
+    int counter = 0;
+    
     /* open i2c comms */
     if ((fd = open(DEV_PATH, O_RDWR)) < 0) {
 	perror("Unable to open i2c device");
@@ -74,12 +99,12 @@ int main(int argc, char **argv)
 	close(fd);
 	exit(1);
     }
-//while(1){
+while(1){
     /* Run one-shot measurement (AIN1-gnd), FSR +-4.096V, 160 SPS, 
      * no windows, no comparation */
     // LowSByte MSByte  they are inverted
     i2c_smbus_write_word_data(fd, CNF_REG, 0x83D3);
-	printf("memoria=%d",0x83D3);
+	//printf("memoria=%d",0x83D3);
     /* Wait until the measurement is complete */
 	usleep(700);		/* 700 microseconds */
 	adc_out = i2c_smbus_read_word_data(fd, CNV_REG);
@@ -95,7 +120,7 @@ int main(int argc, char **argv)
     printf("Value L   = %x \n",adc_l);
     printf("Value H   = %x \n",adc_h);
     printf("Value OK  = %x \n",adc_ok);
-    
+   
     /* calculate output values */
     adc_v = 4.095 * (adc_ok / 2047.0);
 
@@ -104,30 +129,27 @@ int main(int argc, char **argv)
     printf("Value input in V = %.2fV\n", adc_v*47/6);
     printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
 	
-//    delay(1000);	
-//}
+    delay(1000);	
 
-    char *err_msg = 0;
-    
     int rc = sqlite3_open("temperatures.db", &db);
-    	
- if( rc ){
-    fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-    sqlite3_close(db);
-    return(1);
-  }
-
     
-    char *sql = "DROP TABLE IF EXISTS lectures;" 
-                "CREATE TABLE lectures(Id INT, Nom TEXT, Temperatura FLOAT);" 
-                ;
-
-    rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+    if (rc != SQLITE_OK) {
+        
+        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        
+        return 1;
+    }
+    char sql [2056] = "DROP TABLE IF EXISTS Lectures;" 
+                "CREATE TABLE Lectures(Id INT, Sensor TEXT, Temperatura FLOAT, Temps TEXT);" ;
+                //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
+     char texto [2056];
+     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%d, 'Lectura sensor', %.2f, DateTime('now'));",counter, adc_v*4700/6);
+     
+     counter++;
+     rc = sqlite3_exec(db, texto, 0, 0, &err_msg);
     
-    sprintf (sql, "insert into lectures VALUES (1,sensor, %.2f);", adc_v*4700/6);
-
-
- if (rc != SQLITE_OK ) {
+    if (rc != SQLITE_OK ) {
         
         fprintf(stderr, "SQL error: %s\n", err_msg);
         
@@ -138,28 +160,6 @@ int main(int argc, char **argv)
     } 
     
     sqlite3_close(db);
-/*
-
-    if (argc!=3)
-    {
-        fprintf(stderr, "Usage: %s DATABASE SQL_STATEMENT\n", argv[0]);
-        return(1);
-    }
-    
-    rc = sqlite3_open("temperatures.db", &db);
-    
-    if (rc)
-    {
-        fprintf(stderr, "No es pot obrir la base de dades: %s\n", sqlite3_errmsg (db));
-    }
-    
-		printf("introduint dades a la base de dades");
-        sprintf (sql, "insert into lectures VALUES (DataTime('now'), %.2f);", adc_v*4700/6);
-    
-    sqlite3_close(db);
-    close(fd);
-    */
-  
-    
-    return (0);
+   } 
+    return 0;
 }

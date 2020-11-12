@@ -13,8 +13,8 @@
  * informació continguda en diferents columnes.
  * 
  * @file informe.c
- * @author Kevin Gómez Fernández i Daniel Repiso Julio
- * @version Fita3
+ * @author Toni Vives Cabaleiro
+ * @version Fita4
  * @date 03/11/2020
  * 
  * @param - No n'hi ha
