@@ -108,10 +108,10 @@ while(1){
         return 1;
     }
     char sql [2056] = "DROP TABLE IF EXISTS Lectures;" 
-                "CREATE TABLE Lectures(Id INT, Nom TEXT, Temperatura FLOAT, Temps TEXT);" ;
+                "CREATE TABLE Lectures(Id INT, Sensor TEXT, Temperatura FLOAT, Temps TEXT);" ;
                 //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
      char texto [2056];
-     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Nom,Temperatura, Temps) VALUES(%d, 'Lectura sensor', %.2f, DateTime('now'));",counter, adc_v*4700/6);
+     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%d, 'Lectura sensor', %.2f, DateTime('now'));",counter, adc_v*4700/6);
      
      counter++;
      rc = sqlite3_exec(db, texto, 0, 0, &err_msg);
