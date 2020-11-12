@@ -14,17 +14,28 @@
     sqlite3 *db;
     char *zErrMsg = 0;
     int rc;
+    int sensor = 2;
+    float value_sensor = 22;
   
     if( argc!=3 ){
       fprintf(stderr, "Usage: %s DATABASE SQL-STATEMENT\n", argv[0]);
       return(1);
     }
-    rc = sqlite3_open(argv[1], &db);
+    rc = sqlite3_open("basedades_adstr.db", &db);
     if( rc ){
       fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
       sqlite3_close(db);
       return(1);
     }
+    
+    char sql[1024];
+    
+    sprintf(sql, "Insert into mesures (id_sensor, valor) VALUES (%d, %f);", sensor, value_sensor);
+    
+    printf("SQL3: %s\n", sql);
+    
+    
+    
     rc = sqlite3_exec(db, argv[2], callback, 0, &zErrMsg);
     if( rc!=SQLITE_OK ){
       fprintf(stderr, "SQL error: %s\n", zErrMsg);
