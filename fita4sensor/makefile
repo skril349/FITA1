@@ -2,7 +2,7 @@ all: i2c
 	
 
 i2c: sensor.c
-	gcc sensor.c -lsqlite3 -o sensor
+	gcc sensor.c -Wall -lsqlite3 -o sensor
 	./sensor
 
 clean:

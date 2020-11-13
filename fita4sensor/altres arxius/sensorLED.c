@@ -44,23 +44,31 @@
 #include <sqlite3.h>
 #include <string.h>
  
-#define DEV_ID 0x48
-#define DEV_PATH "/dev/i2c-1"
-#define CNF_REG 0x01
-#define CNV_REG 0x00
-
-//------------------------------------------------------------------------------------------------------------------------------
-/*
-#define DEV_PATH "/dev/i2c-1"
-*/
+//Defines del led
 #define SHTDWN_REG 0x00
 #define CTRL_REG1 0x13
 #define CTRL_REG2 0x14
 #define CTRL_REG3 0x15
 #define PWM_UPDATE_REG 0x16
 #define RST_REG 0x17
-  #define DEV_ID_I2C 0x54
 
+//Defines del sensor
+#define DEV_ID 0x54
+#define DEV_PATH "/dev/i2c-1"
+#define CNF_REG 0x01
+#define CNV_REG 0x00
+
+//------------------------------------------------------------------------------------------------------------------------------
+/*
+#define DEV_ID 0x54
+#define DEV_PATH "/dev/i2c-1"
+#define SHTDWN_REG 0x00
+#define CTRL_REG1 0x13
+#define CTRL_REG2 0x14
+#define CTRL_REG3 0x15
+#define PWM_UPDATE_REG 0x16
+#define RST_REG 0x17
+ */
 
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName)
@@ -101,7 +109,7 @@ int main(void) {
     double adc_v = 0.0;
     int counter = 0;
     int n=0;
-    int fd1=0;
+    
     /* open i2c comms */
     if ((fd = open(DEV_PATH, O_RDWR)) < 0) {
 	perror("Unable to open i2c device");
@@ -114,43 +122,27 @@ int main(void) {
 	close(fd);
 	exit(1);
     }
-    
-    if ((fd1 = open(DEV_PATH, O_RDWR)) < 0) {
-	perror("Unable to open i2c device");
-	exit(1);
-    }
-
-    /* configure i2c slave */
-    if (ioctl(fd1, I2C_SLAVE, DEV_ID_I2C) < 0) {
-	perror("Unable to configure i2c slave device");
-	close(fd);
-	exit(1);
-    }
  //--------------------------------------------------------------------------------------------------------------------------
-  
-//------------------------------------------------------------------------------------------------------------------------
-	
-while(n<=10){
-	
-	   /* Power down the device (clean start) */
-    i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
+     /* Power down the device (clean start) */
+    i2c_smbus_write_byte_data(fd, RST_REG, 0x00);
 
     /* Turn on the device in normal operation  */
-    i2c_smbus_write_byte_data(fd1, SHTDWN_REG, 0x01);
+    i2c_smbus_write_byte_data(fd, SHTDWN_REG, 0x01);
 
     /* Activate LEDs 1-3 */
-  i2c_smbus_write_byte_data(fd1, CTRL_REG1, 0x07);
+    i2c_smbus_write_byte_data(fd, CTRL_REG1, 0x07);
 
     /* SET the PWM value for LEDs 1 to 3 */
-   i2c_smbus_write_byte_data(fd1, 0x01, 0xff); // LED1 -> 015/255
-   i2c_smbus_write_byte_data(fd1, 0x02, 0xff); // LED2 -> 002/255
-   i2c_smbus_write_byte_data(fd1, 0x03, 0xff); // LED3 -> 128/255
+    i2c_smbus_write_byte_data(fd, 0x01, 0xAA); // LED1 -> 015/255
+    i2c_smbus_write_byte_data(fd, 0x02, 0xFF); // LED2 -> 002/255
+    //i2c_smbus_write_byte_data(fd, 0x03, 0x04); // LED3 -> 128/255
 	/* Values stored in a temporary register */
 	
 	/* Update values of registers*/
-	i2c_smbus_write_byte_data(fd1, PWM_UPDATE_REG, 0x00); //write any value
+	i2c_smbus_write_byte_data(fd, PWM_UPDATE_REG, 0x00); //write any value
+//------------------------------------------------------------------------------------------------------------------------
 	
-	
+while(n<=10){
     /* Run one-shot measurement (AIN1-gnd), FSR +-4.096V, 160 SPS, 
      * no windows, no comparation */
     // LowSByte MSByte  they are inverted
@@ -180,8 +172,6 @@ while(n<=10){
     printf("Value input in V = %.2fV\n", adc_v*47/6);
     printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
 	
-	i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
-    i2c_smbus_write_byte_data(fd1, SHTDWN_REG, 0x00);
     delay(1000);	
 
     int rc = sqlite3_open("temperatures.db", &db);
@@ -193,14 +183,14 @@ while(n<=10){
         
         return 1;
     }
-   char sql [2056] = "DROP TABLE IF EXISTS Lectures;" 
+    char sql [2056] = "DROP TABLE IF EXISTS Lectures;" 
                 "CREATE TABLE Lectures(Id INT, Sensor TEXT, Temperatura FLOAT, Temps TEXT);" ;
                 //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
      char texto [2056];
      snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%d, 'Lectura sensor', %.2f, DateTime('now'));",counter, adc_v*4700/6);
      
      counter++;
-     rc = sqlite3_exec(db, texto, callback, 0, &err_msg);
+     rc = sqlite3_exec(db, texto, 0, 0, &err_msg);
     
     if (rc != SQLITE_OK ) {
         
@@ -214,11 +204,11 @@ while(n<=10){
     n++;
     
     sqlite3_close(db);
-    
-      
-
    } 
  //----------------------------------------------------------------------------------------------------------------------------  
-   
+    // Reset del led
+    //i2c_smbus_write_byte_data(fd, RST_REG, 0x00);
+    //i2c_smbus_write_byte_data(fd, SHTDWN_REG, 0x00);
+
     return 0;
 }
