@@ -43,11 +43,24 @@
 #include <time.h> 
 #include <sqlite3.h>
 #include <string.h>
-
+ 
 #define DEV_ID 0x48
 #define DEV_PATH "/dev/i2c-1"
 #define CNF_REG 0x01
 #define CNV_REG 0x00
+
+//------------------------------------------------------------------------------------------------------------------------------
+/*
+ #define DEV_ID 0x54
+#define DEV_PATH "/dev/i2c-1"
+#define SHTDWN_REG 0x00
+#define CTRL_REG1 0x13
+#define CTRL_REG2 0x14
+#define CTRL_REG3 0x15
+#define PWM_UPDATE_REG 0x16
+#define RST_REG 0x17
+ */
+
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName)
 {
@@ -86,6 +99,7 @@ int main(void) {
     int adc_ok=0;
     double adc_v = 0.0;
     int counter = 0;
+    int n=0;
     
     /* open i2c comms */
     if ((fd = open(DEV_PATH, O_RDWR)) < 0) {
@@ -99,7 +113,27 @@ int main(void) {
 	close(fd);
 	exit(1);
     }
-while(1){
+ //--------------------------------------------------------------------------------------------------------------------------
+     /* Power down the device (clean start) */
+ //   i2c_smbus_write_byte_data(fd, RST_REG, 0x00);
+
+    /* Turn on the device in normal operation  */
+//    i2c_smbus_write_byte_data(fd, SHTDWN_REG, 0x01);
+
+    /* Activate LEDs 1-3 */
+  //  i2c_smbus_write_byte_data(fd, CTRL_REG1, 0x07);
+
+    /* SET the PWM value for LEDs 1 to 3 */
+//    i2c_smbus_write_byte_data(fd, 0x01, 0x04); // LED1 -> 015/255
+//    i2c_smbus_write_byte_data(fd, 0x02, 0x04); // LED2 -> 002/255
+//    i2c_smbus_write_byte_data(fd, 0x03, 0x04); // LED3 -> 128/255
+	/* Values stored in a temporary register */
+	
+	/* Update values of registers*/
+//	i2c_smbus_write_byte_data(fd, PWM_UPDATE_REG, 0x00); //write any value
+//------------------------------------------------------------------------------------------------------------------------
+	
+while(n<=10){
     /* Run one-shot measurement (AIN1-gnd), FSR +-4.096V, 160 SPS, 
      * no windows, no comparation */
     // LowSByte MSByte  they are inverted
@@ -158,8 +192,13 @@ while(1){
         
         return 1;
     } 
+    n++;
     
     sqlite3_close(db);
    } 
+ //----------------------------------------------------------------------------------------------------------------------------  
+ //    i2c_smbus_write_byte_data(fd, RST_REG, 0x00);
+ //   i2c_smbus_write_byte_data(fd, SHTDWN_REG, 0x00);
+
     return 0;
 }
