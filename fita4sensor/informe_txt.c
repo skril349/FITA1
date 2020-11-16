@@ -2,7 +2,7 @@
  * @brief Programa de lectura d'una base de dades
  * 
  * Programa que llegeix la informació d'una base de dades implementada amb SQLite i mostra per
- * pantalla els valors llegits.
+ * pantalla els valors llegits generant un informe en text.
  * 
  * @code
  * ~$ gcc informe.c -o informe
@@ -10,7 +10,8 @@
  * @endcode
  * 
  * El programa llegeix l'arxiu .db de la base de dades ja existent i mostra per pantalla la
- * informació continguda en diferents columnes.
+ * informació continguda en diferents columnes generant un informe en text on es mostren mesures
+ * maximes, minimes i mitjanes de temperatura.
  * 
  * @file informe.c
  * @author Toni Vives Cabaleiro

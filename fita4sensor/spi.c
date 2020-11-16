@@ -5,6 +5,39 @@
  *
  * Copyrigth (C) EUSS 2018  ( http://www.euss.cat )
  */
+ 
+ 
+ /**
+ * @brief Programa de lectura d'una base de dades
+ * 
+ * Programa que llegeix el voltatge de la placa i la publica
+ * en la base de dades.
+ * 
+ * @code
+ * ~$ gcc informe.c -o informe
+ * ~$ ./informe
+ * @endcode
+ * 
+ * El programa penja a la base de dades els valors obtinguts de voltatge amb un 
+ * divisor de tensio que retorna la meitat del voltatge.
+ * 
+ * @file sensor.c
+ * @author Toni Vives Cabaleiro
+ * @version Fita4
+ * @date 03/11/2020
+ * 
+ * @param - No n'hi ha
+ * @return 0 Si està ok
+ * 
+ * @todo Pròximes fites
+ * 
+ * @section LICENSE
+ * This program is free software; you can redistribute it and/or modify  *
+ * it under the terms of the GNU General Public License as published by  *
+ * the Free Software Foundation; either version 2 of the License, or     *
+ * (at your option) any later version.         
+ */
+ 
 
 #include <stdint.h>
 #include <unistd.h>
@@ -237,7 +270,7 @@ int main(int argc, char *argv[])
                 "CREATE TABLE Voltatges(Id INT, Sensor TEXT, Voltatge FLOAT, Temps TEXT);" ;
                 //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
      char texto [2056];
-     snprintf(texto, sizeof(texto), "INSERT INTO Voltatges(id,Sensor,Voltatge, Temps) VALUES(%d, 'Lectura sensor', %.2f, DateTime('now'));",counter, value_volts);
+     snprintf(texto, sizeof(texto), "INSERT INTO Voltatges(id,Sensor,Voltatge, Temps) VALUES(%d, 'Lectura sensor', %.4f, DateTime('now'));",counter, value_volts);
      
      counter++;
      rc = sqlite3_exec(db, texto, callback, 0, &err_msg);
