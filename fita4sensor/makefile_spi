@@ -1,0 +1,9 @@
+all: sensor
+	
+
+sensor: spi.c spi.o
+	gcc spi.c -lsqlite3 -o spisensor
+	./spisensor
+
+clean:
+	rm -rf *o  sensor
