@@ -1,0 +1,9 @@
+all: arxiu
+	
+
+arxiu: informe_txt_spi.c 
+	gcc informe_txt_spi.c -lsqlite3 -o informe
+	./informe
+
+clean:
+	rm -rf *o  i2c
