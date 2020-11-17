@@ -1,5 +1,5 @@
 Data i hora inici lectura: 2020-11-13 15:44:05
-Data i hora final lectura: 2020-11-13 15:44:15
-Valor màxim lectura: 26.64
+Data i hora final lectura: 2020-11-16 23:55:40
+Valor màxim lectura: 6417.07
 Valor mínim lectura: 26.64
-Valor mig lectura: 26.64
+Valor mig lectura: 2282.08588235294

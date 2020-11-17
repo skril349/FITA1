@@ -61,14 +61,14 @@ int main (int argc, char **argv) {
 	memset(buffer, '\0', 1024);
 	int rc;
 	
-	rc = sqlite3_open("temperatures.db", &db);
+	rc = sqlite3_open("/home/pi/Desktop/FITA1/fita4sensor/temperatures.db", &db);
 	if( rc ) {
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		sqlite3_close(db);
 		return(1);
 	}
 
-	fp = fopen("informeVolttges.txt", "w");
+	fp = fopen("/home/pi/Desktop/FITA1/fita4sensor/informeVolttges.txt", "w");
 	if (fp == NULL) {
 		printf("Can't open the file.\n");
 	}
