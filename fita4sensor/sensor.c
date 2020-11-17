@@ -197,7 +197,7 @@ while(n<=10){
                 "CREATE TABLE Lectures(Id INT, Sensor TEXT, Temperatura FLOAT, Temps TEXT);" ;
                 //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
      char texto [2056];
-     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%d, 'Lectura sensor', %.2f, DateTime('now'));",counter, adc_v*4700/6);
+     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%d, 'sensor temperatura', %.2f, DateTime('now'));",counter, adc_v*4700/6);
      
      counter++;
      rc = sqlite3_exec(db, texto, callback, 0, &err_msg);

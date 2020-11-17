@@ -267,10 +267,10 @@ int main(int argc, char *argv[])
         return 1;
     }
    char sql [2056] = "DROP TABLE IF EXISTS Voltatges;" 
-                "CREATE TABLE Voltatges(Id INT, Sensor TEXT, Voltatge FLOAT, Temps TEXT);" ;
+                "CREATE TABLE Voltatges(Id INT , Sensor TEXT, Voltatge FLOAT, Temps TEXT);" ;
                 //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
      char texto [2056];
-     snprintf(texto, sizeof(texto), "INSERT INTO Voltatges(id,Sensor,Voltatge, Temps) VALUES(%d, 'Lectura sensor', %.4f, DateTime('now'));",counter, value_volts);
+     snprintf(texto, sizeof(texto), "INSERT INTO Voltatges(id,Sensor,Voltatge, Temps) VALUES(%d, 'sensor voltatge', %.4f, DateTime('now'));",counter, value_volts);
      
      counter++;
      rc = sqlite3_exec(db, texto, callback, 0, &err_msg);
