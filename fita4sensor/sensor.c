@@ -130,7 +130,7 @@ int main(void) {
   
 //------------------------------------------------------------------------------------------------------------------------
 	
-while(n<=10){
+while(1){
 	
 	   /* Power down the device (clean start) */
     i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
@@ -182,8 +182,9 @@ while(n<=10){
 	
 	i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
     i2c_smbus_write_byte_data(fd1, SHTDWN_REG, 0x00);
-    delay(1000);	
 
+    delay(10000);
+    
     int rc = sqlite3_open("temperatures.db", &db);
     
     if (rc != SQLITE_OK) {
@@ -212,9 +213,9 @@ while(n<=10){
         return 1;
     } 
     n++;
-    
+        
     sqlite3_close(db);
-    
+
       
 
    } 

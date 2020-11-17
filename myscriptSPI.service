@@ -1,0 +1,24 @@
+#  Cal crear un arxiu de tipus service per executar el programa de sensor de manera automatica, cal copiarlo com a root a /etc/systemd/system amb:
+#  Després cal copiar aquest fitxer a /etc/systemd/system com a root:	sudo cp myscript.service /etc/systemd/system/myscript.service
+#  Un cop copiat, es pot arrencar amb:	sudo systemctl start myscript.service
+#  Es pot parar amb:	sudo systemctl stop myscript.service
+#  Per indicar que s’arrenqui a l’inici:  sudo systemctl enable myscript.service
+
+
+#  This file is to execute the measures automaticaly
+
+[Unit]
+Description=My service
+After=network.target
+
+[Service]
+ExecStart=/home/pi/Desktop/FITA1/fita4sensor/spisensor 
+WorkingDirectory=/home/pi/Desktop/FITA1/fita4sensor
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+

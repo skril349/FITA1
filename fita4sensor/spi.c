@@ -255,7 +255,9 @@ int main(int argc, char *argv[])
 	value_volts=3.3*value_int/1023;
 	
 	printf("voltatge %.3f V\n", value_volts);
-	delay(1000);
+	
+	delay(10000);
+	    
 //--------------------------------------------------------------------------------------------------------------------	
 	  int rc = sqlite3_open("temperatures.db", &db);
     
@@ -287,6 +289,7 @@ int main(int argc, char *argv[])
     n++;
     
     sqlite3_close(db);
+
 }
 	return ret;
 }
