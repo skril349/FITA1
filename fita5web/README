@@ -1,0 +1,8 @@
+LINEAS DE COMANDOS:
+
+pi@rpi27:~/Desktop/FITA1/fita5web $ gcc -fPIC -c -o func.o func.c
+pi@rpi27:~/Desktop/FITA1/fita5web $ gcc -shared -fPIC -o libfunc.so func.o
+pi@rpi27:~/Desktop/FITA1/fita5web $ gcc -c -o main.o main.c -I.
+pi@rpi27:~/Desktop/FITA1/fita5web $ gcc -o main main.o -L. -lfunc
+pi@rpi27:~/Desktop/FITA1/fita5web $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pi/Desktop/FITA1/fita5web/proves
+pi@rpi27:~/Desktop/FITA1/fita5web $ ./main

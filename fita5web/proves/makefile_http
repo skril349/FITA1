@@ -1,0 +1,10 @@
+all: http
+
+http: provaTerminalWeb.o
+	gcc provaTerminalWeb.o -o http
+
+provaTerminalWeb.o: provaTerminalWeb.c
+	gcc -c provaTerminalWeb.c
+
+clean:
+	rm -rf *o http
