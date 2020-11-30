@@ -32,7 +32,7 @@ int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char 
 	int			sFd;
 	int 		result;
 	char		buffer[4256];
-	char		missatge[REQUEST_MSG_SIZE]="GET /cloud/guardar_dades.php?id_sensor=1&valor=1234567&temps=2020-11-27+12%3A34%3A56 HTTP/1.1\r\nHost: iotlab.euss.es\r\n\r\n";
+	char		missatge[REQUEST_MSG_SIZE]="GET /cloud/guardar_dades.php?id_sensor=1&valor=1234567& HTTP/1.1\r\nHost: iotlab.euss.es\r\n\r\n";
 	;
 	
 	time_t t = time(NULL);
