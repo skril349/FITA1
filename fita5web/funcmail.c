@@ -15,7 +15,7 @@
 
 
 #define REQUEST_MSG_SIZE 1024
-#define REPLY_MSG_SIZE 500
+#define REPLY_MSG_SIZE 5000
 #define SERVER_PORT_NUM 25
 
 
@@ -114,7 +114,7 @@ int email( char *nom_servidor, char *email_destinatari, char *email_remitent, ch
 	
 	//Message
 	memset(BufWrite, 0, REPLY_MSG_SIZE);
-	sprintf (BufWrite, "Subject: ADSTR\nFrom: %s\nTo: %s\n %s \n.\n", email_remitent, email_destinatari, text_email);
+	sprintf (BufWrite, "Subject: ADSTR\nFrom: %s\nTo: %s\n %s \n.\n", email_remitent, email_destinatari,text_email);
 	printf("Enviat: %s\n", BufWrite);
 	result = write(sFd, BufWrite, strlen(BufWrite));
 

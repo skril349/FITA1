@@ -2,8 +2,8 @@ all: email
 	
 
 email: mainmail.c
-	gcc -shared -fPIC -c -o funcmail.o funcmail.c
 	gcc -fPIC -c -o funcmail.o funcmail.c
+	gcc -shared -fPIC -c -o funcmail.o funcmail.c
 	gcc -c -o mainmail.o mainmail.c -I.
 	gcc -o mainmail mainmail.o -L. -lfuncmail -lsqlite3 -Wall
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pi/Desktop/FITA1/fita5web
