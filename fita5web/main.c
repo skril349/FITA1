@@ -70,7 +70,7 @@ int main(void) {
 	char cadena_URI[32] = "iotlab.euss.es";
 	char resposta_header[4256];
 	char resposta_data[5256];
-	char missatge_dades[5256]="12321";
+	char missatge_dades[5256];
     sqlite3 *db;
     char *err_msg = 0;
     int fd = 0;
@@ -145,22 +145,22 @@ while(n<10){
 	// dichart 4 LSB
 	adc_ok=(adc_ok>>4);
 	
-  /*  printf("Value ADC = %d \n",adc_out);
+    printf("Value ADC = %d \n",adc_out);
     printf("Value ADC = %x \n",adc_out);
     printf("Value L   = %x \n",adc_l);
     printf("Value H   = %x \n",adc_h);
     printf("Value OK  = %x \n",adc_ok);
-   */
+  
    
     /* calculate output values */
     adc_v = 4.095 * (adc_ok / 2047.0);
 
     /*output */
-    /*
+  
     printf("Value ADC in V = %.2fV\n", adc_v);
     printf("Value input in V = %.2fV\n", adc_v*47/6);
     printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
-	*/
+	sprintf(missatge_dades,"%.2f",adc_v*4700/6);
 	//sprintf(missatge_dades,"%s",adc_v*4700/6);
 	
 	i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
@@ -199,10 +199,6 @@ while(n<10){
         
     sqlite3_close(db);
     //missatge_dades="/cloud/guardar_dades.php?id_sensor=1&valor=1234567& HTTP/1.1\r\nHost: iotlab.euss.es\r\n\r\n";
-	 time_t t = time(NULL);
-	 struct tm tm = *localtime(&t);
-	 printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-
 	http_get(nom_servidor, cadena_URI, resposta_header, resposta_data,missatge_dades );
 
    } 
