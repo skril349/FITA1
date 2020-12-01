@@ -24,7 +24,7 @@
 #define SERVER_PORT_NUM		80
 
     
-int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char *resposta_data )
+int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char *resposta_data,char missatge_dades[5256])
 {
 	struct sockaddr_in	serverAddr;
 	char		serverName[32]="192.168.11.185";					//Adreça IP on està el client
@@ -32,8 +32,8 @@ int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char 
 	int			sFd;
 	int 		result;
 	char		buffer[4256];
-	char		missatge[REQUEST_MSG_SIZE]="GET /cloud/guardar_dades.php?id_sensor=1&valor=1234567& HTTP/1.1\r\nHost: iotlab.euss.es\r\n\r\n";
-	;
+	char		missatge[REQUEST_MSG_SIZE];
+	sprintf(missatge,"GET /cloud/guardar_dades.php?id_sensor=1&valor=%s& HTTP/1.1\r\nHost: %s\r\n\r\n",missatge_dades,cadena_URI);
 	
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
@@ -92,8 +92,8 @@ int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char 
 		}
 	}
 	
-	printf("CAPÇALERA: \n%s\n\n", resposta_header);
-	printf("HTML: \n%s\n", resposta_data);
+	//printf("CAPÇALERA: \n%s\n\n", resposta_header);
+	//printf("HTML: \n%s\n", resposta_data);
 	
 
 	return 0;
