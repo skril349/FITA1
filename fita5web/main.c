@@ -171,6 +171,7 @@ void callbacksensor(union sigval si)
 	printf("Value ADC in V = %.2fV\n", adc_v);
     printf("Value input in V = %.2fV\n", adc_v*47/6);
     printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
+    sprintf(missatge_dades,"%.2f",adc_v*4700/6);
 	  int rc = sqlite3_open("temperatures.db", &db);
     
     if (rc != SQLITE_OK) {
@@ -215,7 +216,7 @@ int main(void) {
  //----------------------------------------------------------------------------------------------------------------------------  
    
     timer_t tick;
-    set_timer(&tick, 1, 1, callbacksensor, (void *) "tick" );
+    set_timer(&tick, 1, 3, callbacksensor, (void *) "tick" );
     getchar();
     return 0;
 }
