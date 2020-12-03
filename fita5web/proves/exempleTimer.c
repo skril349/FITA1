@@ -71,7 +71,7 @@ int set_timer(timer_t * timer_id, float delay, float interval, timer_callback * 
     return 0;
 }
 
-void callback(union sigval si)
+void callbacksensor(union sigval si)
 {
     char * msg = (char *) si.sival_ptr;
     
@@ -150,9 +150,7 @@ int main(int argc, char ** argv)
 {
 
     timer_t tick;
-    timer_t tock;
-    set_timer(&tick, 1, 1, callback, (void *) "tick" );
-    set_timer(&tock, 1.5, 1, callback, (void *) "tock" );
+    set_timer(&tick, 1, 1, callbacksensor, (void *) "tick" );
     getchar();
 
     return 0;

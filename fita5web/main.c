@@ -8,15 +8,19 @@
 
 
 
+#include <pthread.h>
+#include <signal.h>
+#include <sys/time.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <linux/i2c-dev.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <time.h> 
 #include <sqlite3.h>
 #include <string.h>
+
 #include "func.h"
 
 #define DEV_ID 0x48
@@ -50,22 +54,50 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName)
 }
 
 
-void delay(int number_of_seconds) 
-{ 
-    // Converting time into milli_seconds 
-    int milli_seconds = 1000 * number_of_seconds; 
-  
-    // Storing start time 
-    clock_t start_time = clock(); 
-  
-    // looping till required time is not achieved 
-    while (clock() < start_time + milli_seconds) 
-        ; 
+
+typedef void (timer_callback) (union sigval);
+
+/* Funció set_timer
+ * 
+ * Crear un timer
+ * 
+ * Paràmetres:
+ * timer_id: punter a una estructura de tipus timer_t
+ * delay: retard disparament timer (segons)
+ * interval: periode disparament timer  (segons)
+ * func: funció que s'executarà al disparar el timer
+ * data: informació que es passarà a la funció func
+ * 
+ * */
+int set_timer(timer_t * timer_id, float delay, float interval, timer_callback * func, void * data) 
+{
+    int status =0;
+    struct itimerspec ts;
+    struct sigevent se;
+
+    se.sigev_notify = SIGEV_THREAD;
+    se.sigev_value.sival_ptr = data;
+    se.sigev_notify_function = func;
+    se.sigev_notify_attributes = NULL;
+
+    status = timer_create(CLOCK_REALTIME, &se, timer_id);
+
+    ts.it_value.tv_sec = abs(delay);
+    ts.it_value.tv_nsec = (delay-abs(delay)) * 1e09;
+    ts.it_interval.tv_sec = abs(interval);
+    ts.it_interval.tv_nsec = (interval-abs(interval)) * 1e09;
+
+    status = timer_settime(*timer_id, 0, &ts, 0);
+    return 0;
 }
 
-
-
-int main(void) {
+void callbacksensor(union sigval si)
+{
+    char * msg = (char *) si.sival_ptr;
+    
+    printf("%s\n",msg);
+    
+    //------------------------------------------------------------------------------------------------
     char nom_servidor[32] = "192.168.11.185";
 	char cadena_URI[32] = "iotlab.euss.es";
 	char resposta_header[4256];
@@ -108,9 +140,7 @@ int main(void) {
  //--------------------------------------------------------------------------------------------------------------------------
   
 //------------------------------------------------------------------------------------------------------------------------
-	
-while(n<10){
-	
+		
 	   /* Power down the device (clean start) */
     i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
 
@@ -120,55 +150,28 @@ while(n<10){
     /* Activate LEDs 1-3 */
   i2c_smbus_write_byte_data(fd1, CTRL_REG1, 0x07);
 
-    /* SET the PWM value for LEDs 1 to 3 */
    i2c_smbus_write_byte_data(fd1, 0x01, 0xff); // LED1 -> 015/255
    i2c_smbus_write_byte_data(fd1, 0x02, 0xff); // LED2 -> 002/255
    i2c_smbus_write_byte_data(fd1, 0x03, 0xff); // LED3 -> 128/255
-	/* Values stored in a temporary register */
 	
-	/* Update values of registers*/
-	i2c_smbus_write_byte_data(fd1, PWM_UPDATE_REG, 0x00); //write any value
+	i2c_smbus_write_byte_data(fd1, PWM_UPDATE_REG, 0x00); 
 	
-	
-    /* Run one-shot measurement (AIN1-gnd), FSR +-4.096V, 160 SPS, 
-     * no windows, no comparation */
-    // LowSByte MSByte  they are inverted
     i2c_smbus_write_word_data(fd, CNF_REG, 0x83D3);
-	//printf("memoria=%d",0x83D3);
-    /* Wait until the measurement is complete */
-	usleep(700);		/* 700 microseconds */
+
+	usleep(700);		
 	adc_out = i2c_smbus_read_word_data(fd, CNV_REG);
-	// swap bytes
 	adc_l=adc_out >> 8;
 	adc_h=adc_out;
 	adc_ok=(adc_h<<8)|adc_l;
-	// dichart 4 LSB
 	adc_ok=(adc_ok>>4);
-	
-    printf("Value ADC = %d \n",adc_out);
-    printf("Value ADC = %x \n",adc_out);
-    printf("Value L   = %x \n",adc_l);
-    printf("Value H   = %x \n",adc_h);
-    printf("Value OK  = %x \n",adc_ok);
-  
-   
-    /* calculate output values */
-    adc_v = 4.095 * (adc_ok / 2047.0);
 
-    /*output */
-  
-    printf("Value ADC in V = %.2fV\n", adc_v);
-    printf("Value input in V = %.2fV\n", adc_v*47/6);
-    printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
-	sprintf(missatge_dades,"%.2f",adc_v*4700/6);
-	//sprintf(missatge_dades,"%s",adc_v*4700/6);
-	
+    adc_v = 4.095 * (adc_ok / 2047.0);	
 	i2c_smbus_write_byte_data(fd1, RST_REG, 0x00);
     i2c_smbus_write_byte_data(fd1, SHTDWN_REG, 0x00);
-
-    delay(1000);
-    
-    int rc = sqlite3_open("temperatures.db", &db);
+	printf("Value ADC in V = %.2fV\n", adc_v);
+    printf("Value input in V = %.2fV\n", adc_v*47/6);
+    printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
+	  int rc = sqlite3_open("temperatures.db", &db);
     
     if (rc != SQLITE_OK) {
         
@@ -201,8 +204,18 @@ while(n<10){
     //missatge_dades="/cloud/guardar_dades.php?id_sensor=1&valor=1234567& HTTP/1.1\r\nHost: iotlab.euss.es\r\n\r\n";
 	http_get(nom_servidor, cadena_URI, resposta_header, resposta_data,missatge_dades );
 
-   } 
+    //--------------------------------------------------------------------------------------------------
+}
+
+
+
+
+int main(void) {
+   
  //----------------------------------------------------------------------------------------------------------------------------  
    
+    timer_t tick;
+    set_timer(&tick, 1, 1, callbacksensor, (void *) "tick" );
+    getchar();
     return 0;
 }
