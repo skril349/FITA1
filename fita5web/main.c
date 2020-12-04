@@ -103,6 +103,8 @@ void callbacksensor(union sigval si)
 	char resposta_header[4256];
 	char resposta_data[5256];
 	char missatge_dades[5256];
+	char valorSensor[5256];
+	char idSensor[5256]="81";
     sqlite3 *db;
     char *err_msg = 0;
     int fd = 0;
@@ -171,7 +173,13 @@ void callbacksensor(union sigval si)
 	printf("Value ADC in V = %.2fV\n", adc_v);
     printf("Value input in V = %.2fV\n", adc_v*47/6);
     printf("Value degrees(ºC) = %.2fºC\n", adc_v*4700/6);
-    sprintf(missatge_dades,"%.2f",adc_v*4700/6);
+   // sprintf(missatge_dades,"%.2f",adc_v*4700/6);
+   // sprintf(cadenaSensor,"/cloud/guardar_dades.php?id_sensor=%s&valor=%s&",idSensor,missatge_dades);
+    
+    
+    sprintf(valorSensor,"%.2f",adc_v*4700/6);
+    sprintf(missatge_dades,"/cloud/guardar_dades.php?id_sensor=%s&valor=%s&",idSensor,valorSensor);
+    
 	  int rc = sqlite3_open("temperatures.db", &db);
     
     if (rc != SQLITE_OK) {
@@ -179,13 +187,13 @@ void callbacksensor(union sigval si)
         fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         
-        return 1;
+        //return 1;
     }
    char sql [2056] = "DROP TABLE IF EXISTS Lectures;" 
                 "CREATE TABLE Lectures(Id INT, Sensor TEXT, Temperatura FLOAT, Temps TEXT);" ;
                 //"CREATE TABLE Lectures(Id INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Temperatura FLOAT, Temps TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" ;        
      char texto [2056];
-     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%d, 'sensor temperatura', %.2f, DateTime('now'));",counter, adc_v*4700/6);
+     snprintf(texto, sizeof(texto), "INSERT INTO Lectures(id,Sensor,Temperatura, Temps) VALUES(%s, 'sensor temperatura', %.2f, DateTime('now'));",idSensor, adc_v*4700/6);
      
      counter++;
      rc = sqlite3_exec(db, texto, callback, 0, &err_msg);
@@ -197,13 +205,12 @@ void callbacksensor(union sigval si)
         sqlite3_free(err_msg);        
         sqlite3_close(db);
         
-        return 1;
+        //return 1;
     } 
     n++;
         
     sqlite3_close(db);
-    //missatge_dades="/cloud/guardar_dades.php?id_sensor=1&valor=1234567& HTTP/1.1\r\nHost: iotlab.euss.es\r\n\r\n";
-	http_get(nom_servidor, cadena_URI, resposta_header, resposta_data,missatge_dades );
+	http_get(nom_servidor, cadena_URI, resposta_header, resposta_data, missatge_dades );
 
     //--------------------------------------------------------------------------------------------------
 }

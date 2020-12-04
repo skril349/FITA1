@@ -32,9 +32,9 @@ int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char 
 	int			sFd;
 	int 		result;
 	char		buffer[4256];
+	char 		idSensor[4256]="81";
 	char		missatge[REQUEST_MSG_SIZE];
-	sprintf(missatge,"GET /cloud/guardar_dades.php?id_sensor=1&valor=%s& HTTP/1.1\r\nHost: %s\r\n\r\n",missatge_dades,cadena_URI);
-	
+	sprintf(missatge,"GET %s HTTP/1.1\r\nHost: %s\r\n\r\n",missatge_dades,cadena_URI);
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
 	
@@ -59,11 +59,10 @@ int http_get( char *nom_servidor, char *cadena_URI, char *resposta_header, char 
 		exit(-1);
 	}
 	printf("\nConnexió establerta amb el servidor: adreça %s, port %d\n",	inet_ntoa(serverAddr.sin_addr), ntohs(serverAddr.sin_port));
-
+	//printf("-----------------------------------------------%s\n",missatge_dades);
 	/*Enviar*/
 	strcpy(buffer,missatge); //Copiar missatge a buffer
 	result = write(sFd, buffer, strlen(buffer));
-	
 	printf("Missatge enviat a servidor(bytes %d): %s\n",	result, missatge);	//Imprimim per pantalla el que hem enviat al servidor.
        
 	/*Rebre*/
