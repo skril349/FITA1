@@ -49,6 +49,8 @@ int main(int argc, char *argv[])
 	char text_email[REPLY_MSG_SIZE]; //Text del email.
 	char minim[1024];
 	char maxim[1024];
+	char minimSpi[1024];
+	char maximSpi[1024];
 	sqlite3 *db;
 	char *zErrMsg = 0;
 	char buffer[1024];
@@ -70,7 +72,7 @@ int main(int argc, char *argv[])
 	}
 
     //Data i hora inicial
-    sprintf(sql, "SELECT MIN(Temps) FROM Lectures %s", buffer);
+    sprintf(sql, "SELECT MIN(Temps) FROM Lectures WHERE Id = 81 %s", buffer);
     sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
     sprintf(text, "Data i hora inici lectura: %s\n", valores) ;
 
@@ -78,14 +80,14 @@ int main(int argc, char *argv[])
     memset(text, '\0', sizeof(text));
  
     //Data i hora final
-    sprintf(sql, "SELECT MAX(Temps) FROM Lectures %s", buffer);
+    sprintf(sql, "SELECT MAX(Temps) FROM Lectures WHERE Id = 81 %s", buffer);
     sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
     sprintf(text, "Data i hora final lectura: %s\n", valores);
     fprintf(fp, "%s", text);
     memset(text, '\0', sizeof(text));
 
     //Valor màxim
-    sprintf(sql, "SELECT MAX(Temperatura) FROM Lectures %s", buffer);
+    sprintf(sql, "SELECT MAX(Temperatura) FROM Lectures WHERE Id = 81 %s", buffer);
     sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
     sprintf(text, "Valor màxim lectura: %s\n", valores);
     sprintf(maxim, "Valor màxim lectura: %s\n", valores) ;
@@ -94,7 +96,7 @@ int main(int argc, char *argv[])
     memset(text, '\0', sizeof(text));
     
     //Valor mínim
-    sprintf(sql, "SELECT MIN(Temperatura) FROM Lectures %s", buffer);
+    sprintf(sql, "SELECT MIN(Temperatura) FROM Lectures WHERE Id = 81 %s", buffer);
     sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
     sprintf(text, "Valor mínim lectura: %s\n", valores);
     sprintf(minim, "Valor mínim lectura: %s\n", valores) ;
@@ -102,11 +104,59 @@ int main(int argc, char *argv[])
     memset(text, '\0', sizeof(text));
     
     //Valor mig
-    sprintf(sql, "SELECT AVG(Temperatura) FROM Lectures %s", buffer);
+    printf(buffer);
+    sprintf(sql, "SELECT AVG(Temperatura) FROM Lectures WHERE Id = 81 %s", buffer);
     sqlite3_exec(db, sql, callback, (void*)buffer, &zErrMsg);
     sprintf(text, "Valor mig lectura: %s\n", valores);
     fprintf(fp, "%s", text);
     memset(text, '\0', sizeof(text));
+
+
+//-----------------------------
+
+    //Data i hora inicial
+    sprintf(sql, "SELECT MIN(Temps) FROM Lectures WHERE Id = 82 %s", buffer);
+    sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
+    sprintf(text, "Data i hora inici lectura: %s\n", valores) ;
+
+    fprintf(fp, "%s", text);
+    memset(text, '\0', sizeof(text));
+ 
+    //Data i hora final
+    sprintf(sql, "SELECT MAX(Temps) FROM Lectures WHERE Id = 82 %s", buffer);
+    sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
+    sprintf(text, "Data i hora final lectura: %s\n", valores);
+    fprintf(fp, "%s", text);
+    memset(text, '\0', sizeof(text));
+
+    //Valor màxim
+    sprintf(sql, "SELECT MAX(Temperatura) FROM Lectures WHERE Id = 82 %s", buffer);
+    sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
+    sprintf(text, "Valor màxim lectura: %s\n", valores);
+    sprintf(maximSpi, "Valor màxim lectura: %s\n", valores) ;
+
+    fprintf(fp, "%s", text);
+    memset(text, '\0', sizeof(text));
+    
+    //Valor mínim
+    sprintf(sql, "SELECT MIN(Temperatura) FROM Lectures WHERE Id = 82 %s", buffer);
+    sqlite3_exec(db, sql, callback, (void *)buffer, &zErrMsg);
+    sprintf(text, "Valor mínim lectura: %s\n", valores);
+    sprintf(minimSpi, "Valor mínim lectura: %s\n", valores) ;
+    fprintf(fp, "%s", text);
+    memset(text, '\0', sizeof(text));
+    
+    //Valor mig
+    printf(buffer);
+    sprintf(sql, "SELECT AVG(Temperatura) FROM Lectures WHERE Id = 82 %s", buffer);
+    sqlite3_exec(db, sql, callback, (void*)buffer, &zErrMsg);
+    sprintf(text, "Valor mig lectura: %s\n", valores);
+    fprintf(fp, "%s", text);
+    memset(text, '\0', sizeof(text));
+
+
+
+
 
 
 	rc = sqlite3_exec(db, argv[2], callback, 0, &zErrMsg);
@@ -118,7 +168,7 @@ int main(int argc, char *argv[])
 	fclose(fp);
 	sqlite3_close(db);
 	//printf("maxim=%s",maxim);
-	sprintf(text_email,"\nMail de prova\n\nSalutacions,\n\nToni Vives Cabaleiro.\nValors:%s\n%s",maxim,minim);
+	sprintf(text_email,"\nMail de prova\n\nSalutacions,\n\nToni Vives Cabaleiro.\nValors:%s\n%s\n%s\n%s",maxim,minim,maximSpi,minimSpi);
 	email(nom_servidor, email_destinatari, email_remitent,text_email);
 
 	return 0;
