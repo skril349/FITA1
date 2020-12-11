@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sqlite3.h>
-
+#include <getopt.h>
 #include "funcmail.h"
 
 #define REQUEST_MSG_SIZE 1024
@@ -44,9 +44,10 @@ int main(int argc, char *argv[])
 {
 
 	char nom_servidor[32] = "172.20.0.21"; //Adreça IP per accedir al server
-	char email_destinatari[REPLY_MSG_SIZE] = "1458570@campus.euss.org"; //Email del destinatari
+	char email_destinatari[REPLY_MSG_SIZE] = "1396920@campus.euss.org"; //Email del destinatari
 	char email_remitent[REPLY_MSG_SIZE] = "afontquerni@euss.es"; //Email del remitent
 	char text_email[REPLY_MSG_SIZE]; //Text del email.
+	char basedades[REPLY_MSG_SIZE] = "/home/pi/Desktop/FITA1/fita5web/temperatures.db"; //Nom de la base de dades
 	char minim[1024];
 	char maxim[1024];
 	char minimSpi[1024];
@@ -58,6 +59,42 @@ int main(int argc, char *argv[])
 	char sql[1024];
 	memset(buffer, '\0', 1024);
 	int rc;
+
+	int opt= 0;
+    static struct option long_options[] = 
+    {
+        {"servidor", required_argument, 0, 's'},
+        {"origen", required_argument, 0, 'o'},
+        {"desti", required_argument, 0, 'd'},
+        {"basedades", required_argument, 0, 'b'},
+        {0, 0, 0, 0}
+    };
+
+    int long_index =0;
+    while ((opt = getopt_long(argc, argv,"s:o:d:b:", long_options, &long_index )) != -1) 
+    {
+        switch (opt) 
+        {
+
+             case 's' : strcpy(nom_servidor, optarg); 
+                 break;
+             case 'o' : strcpy(email_remitent, optarg);
+                 break;
+             case 'd' : strcpy(email_destinatari, optarg);
+                 break;
+             case 'b' : strcpy(basedades, optarg);
+                 break;
+             default: 	error(); 
+                 exit(EXIT_FAILURE);
+        }
+    }
+    
+    printf("Aquest codi està generant un email accedint des del terminal on les dades estàn organitzades de la següent manera:\n");
+    printf(" ./mainmail -s 172.20.0.21 -o lalala@euss.es -d 1396920@campus.euss.org -b /home/pi/Desktop/FITA1/fita5web/temperatures.db\n");
+    //delay(5000);
+    system("cls");
+    printf("Servidor: %s, Destinatari: %s, Remitent: %s.\n", nom_servidor, email_destinatari, email_remitent);
+
 	
 	rc = sqlite3_open("/home/pi/Desktop/FITA1/fita5web/temperatures.db", &db);
 	if( rc ) {
