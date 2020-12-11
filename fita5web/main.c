@@ -38,6 +38,11 @@
 //SPI
 int verbose = 1;
 
+//Variables Globals
+char basedades[REPLY_MSG_SIZE] = "/home/pi/Desktop/FITA1/fita5web/temperatures.db"; //Nom de la base de dades
+char nom_servidor[REPLY_MSG_SIZE] = "192.168.11.185"; //Nom del servidor
+
+
 static char *cntdevice = "/dev/spidev0.0";
 
 //ADC configurations segons manual MCP3008
@@ -264,7 +269,7 @@ void callbacksensor(union sigval si)
     printf("%s\n",msg);
     
     //------------------------------------------------------------------------------------------------
-    char nom_servidor[32] = "192.168.11.185";
+//    char nom_servidor[32] = "192.168.11.185";
 	char cadena_URI[32] = "iotlab.euss.es";
 	char resposta_header[4256];
 	char resposta_data[5256];
@@ -346,7 +351,7 @@ void callbacksensor(union sigval si)
     sprintf(valorSensor,"%.2f",adc_v*4700/6);
     sprintf(missatge_dades,"/cloud/guardar_dades.php?id_sensor=%s&valor=%s&",idSensor,valorSensor);
     
-	  int rc = sqlite3_open("temperatures.db", &db);
+	  int rc = sqlite3_open(basedades, &db);
     
     if (rc != SQLITE_OK) {
         
@@ -384,7 +389,7 @@ void callbacksensor(union sigval si)
 void callbacksensorSPI(union sigval si)
 {
 	
-	 char nom_servidor[32] = "192.168.11.185";
+//	char nom_servidor[32] = "192.168.11.185";
 	char cadena_URI[32] = "iotlab.euss.es";
 	char resposta_header[4256];
 	char resposta_data[5256];
@@ -413,7 +418,7 @@ void callbacksensorSPI(union sigval si)
     sprintf(valorSensor,"%.2f",3.3*value_int/1023);
     sprintf(missatge_dades,"/cloud/guardar_dades.php?id_sensor=%s&valor=%s&",idSensor,valorSensor);
     
-	  int rc = sqlite3_open("temperatures.db", &db);
+	  int rc = sqlite3_open(basedades, &db);
     
     if (rc != SQLITE_OK) {
         
@@ -451,12 +456,39 @@ void callbacksensorSPI(union sigval si)
 
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
    
  //----------------------------------------------------------------------------------------------------------------------------  
-   
+
+	
+	int opt= 0;
+    static struct option long_options[] = 
+    {
+        {"servidor", required_argument, 0, 's'},
+
+        {"basedades", required_argument, 0, 'b'},
+        {0, 0, 0, 0}
+    };
+
+    int long_index =0;
+    while ((opt = getopt_long(argc, argv,"s:b:", long_options, &long_index )) != -1) 
+    {
+        switch (opt) 
+        {
+
+             case 's' : strcpy(nom_servidor, optarg); 
+                 break;
+             case 'b' : strcpy(basedades, optarg);
+                 break;
+             default: 	error(); 
+                 exit(EXIT_FAILURE);
+        }
+    }
+    
+    printf(" ./main -s 192.168.11.185 -b /home/pi/Desktop/FITA1/fita5web/temperatures.db\n");
+
     timer_t tick;
-   timer_t tock;
+	timer_t tock;
 
     set_timer(&tick, 1, 2, callbacksensor, (void *) "tick" );
     set_timer(&tock, 1, 3, callbacksensorSPI, (void *) "tock" );
