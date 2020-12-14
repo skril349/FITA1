@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import paho.mqtt.client as mqtt
+import requests
 #from pymongo import MongoClient
 ipadress = '192.168.11.218'
 #cliente = MongoClient("mongodb+srv://skril:Pereieva1@cluster0-eufis.mongodb.net/test?retryWrites=true&w=majority")
@@ -25,14 +26,26 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
 
     if(msg.topic == "Temperatura"):
         temp = {"Temperatura":"{0}".format(str(msg.payload))}
+        cadena = 'http://iotlab.euss.es/cloud/guardar_dades_adaptat.php?id_sensor=81&valor={0}&temps='.format(str(msg.payload))
+        print(cadena)
+        r =requests.get(cadena)
+        print(r)
         #Temperatura.insert_one(temp)
         
     if(msg.topic == "Humitat"):
         hum = {"Humitat":"{0}".format(str(msg.payload))}
+        cadena1 = 'http://iotlab.euss.es/cloud/guardar_dades_adaptat.php?id_sensor=82&valor={0}&temps='.format(str(msg.payload))
+        print(cadena1)
+        r1 =requests.get(cadena1)
+        print(r1)
        # Humitat.insert_one(hum)
         
     if(msg.topic == "Pressure"):
         llum = {"Pressure":"{0}".format(str(msg.payload))}
+        cadena2 = 'http://iotlab.euss.es/cloud/guardar_dades_adaptat.php?id_sensor=83&valor={0}&temps='.format(str(msg.payload))
+        print(cadena2)
+        r2 =requests.get(cadena2)
+        print(r2)
        # Lluminositat.insert_one(llum)    
 
 
