@@ -29,4 +29,4 @@ while True:
             {'topic': "Pressure", 'payload': "{0:.4f}".format(pressure)}
             ]
     publish.multiple(msgs, hostname="test.mosquitto.org", port=1883)
-    time.sleep(10)
+    time.sleep(2)
