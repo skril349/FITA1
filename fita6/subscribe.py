@@ -2,9 +2,16 @@
 import paho.mqtt.client as mqtt
 import requests
 import sqlite3
+import json
 from sqlite3 import Error
 from datetime import date
 from datetime import datetime
+
+TemperaturesJson = []
+HumitatJson = []
+PressureJson = []
+
+
 
 def cadenaTime():
     today = date.today()
@@ -12,22 +19,12 @@ def cadenaTime():
     d1 = today.strftime("%d/%m/%Y")
     current_time = now.strftime("%H:%M:%S")
     valueTemps=str(d1+' '+current_time)
-    print (valueTemps)
+    #print (valueTemps)
     return(valueTemps)
 
 
 #from pymongo import MongoClient
 ipadress = '192.168.11.218'
-#cliente = MongoClient("mongodb+srv://skril:Pereieva1@cluster0-eufis.mongodb.net/test?retryWrites=true&w=majority")
-#db = cliente.get_database('Student')
-#Temperatura = db.Temperatures
-#Lluminositat = db.Lluminositat
-#Humitat = db.Humitat
-
-#Lluminositat.insert_one({"Lluminositat":"3"})
-#Humitat.insert_one({"Humitat":"5"})
-
-
     
 def sql_insert(con, entities):
 
@@ -72,37 +69,91 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
     if(msg.topic == "Temperatura"):
         temp = {"Temperatura":"{0}".format(str(msg.payload))}
         cadena = 'http://iotlab.euss.es/cloud/guardar_dades_adaptat.php?id_sensor=81&valor={0}&temps='.format(str(msg.payload))
-        print(cadena)
+        #print(cadena)
         r =requests.get(cadena)
         str(msg.payload)
-        print(type(msg.payload))
+        #print(type(msg.payload))
         temps = str(cadenaTime())
         entities = (81, 'Temperatura', str(msg.payload),temps)
         sql_insert(con, entities)
-        
-        print(r)
+        with con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM fita6mqtt WHERE Id == 81")
+            while True:
+                row = cur.fetchone()
+                if row == None:
+                    break
+                #print(row[2])
+                TemperaturesJson.append(row[2])
+            #print(Temperatures)
+            with open("lectures.json") as json_file:
+                data = json.load(json_file)
+                data["temperatura"].append(TemperaturesJson[-1])
+                #print(data)
+            with open("lectures.json", "w") as jsonFile:
+                json.dump(data, jsonFile, indent=4)
+              
+            del TemperaturesJson[:]
+    
+        #print(r)
         #Temperatura.insert_one(temp)
         
     if(msg.topic == "Humitat"):
         hum = {"Humitat":"{0}".format(str(msg.payload))}
         cadena1 = 'http://iotlab.euss.es/cloud/guardar_dades_adaptat.php?id_sensor=82&valor={0}&temps='.format(str(msg.payload))
-        print(cadena1)
+        #print(cadena1)
         r1 =requests.get(cadena1)
-        print(r1)
+        #print(r1)
         temps = str(cadenaTime())
         entities = (82, 'Humitat', str(msg.payload),temps)
         sql_insert(con, entities)
+        with con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM fita6mqtt WHERE Id == 82")
+            while True:
+                row = cur.fetchone()
+                if row == None:
+                    break
+                #print(row[2])
+                HumitatJson.append(row[2])
+            #print(Temperatures)
+            with open("lectures.json") as json_file:
+                data = json.load(json_file)
+                data["humitat"].append(HumitatJson[-1])
+                #print(data)
+            with open("lectures.json", "w") as jsonFile:
+                json.dump(data, jsonFile, indent=4)
+              
+            del HumitatJson[:]
        # Humitat.insert_one(hum)
         
     if(msg.topic == "Pressure"):
         llum = {"Pressure":"{0}".format(str(msg.payload))}
         cadena2 = 'http://iotlab.euss.es/cloud/guardar_dades_adaptat.php?id_sensor=83&valor={0}&temps='.format(str(msg.payload))
-        print(cadena2)
+        #print(cadena2)
         r2 =requests.get(cadena2)
-        print(r2)
+        #print(r2)
         temps = str(cadenaTime())
         entities = (83, 'Pressure', str(msg.payload),temps)
         sql_insert(con, entities)
+        with con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM fita6mqtt WHERE Id == 83")
+            while True:
+                row = cur.fetchone()
+                if row == None:
+                    break
+                #print(row[2])
+                PressureJson.append(row[2])
+            #print(Temperatures)
+            with open("lectures.json") as json_file:
+                data = json.load(json_file)
+                data["pressure"].append(PressureJson[-1])
+                #print(data)
+            with open("lectures.json", "w") as jsonFile:
+                json.dump(data, jsonFile, indent=4)
+              
+            del PressureJson[:]
        # Lluminositat.insert_one(llum)    
 
 

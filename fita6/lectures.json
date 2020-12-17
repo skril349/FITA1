@@ -1,0 +1,12 @@
+{
+    "status": "success", 
+    "temperatura": [
+        "39.6437"
+    ], 
+    "humitat": [
+        "27.6162"
+    ], 
+    "pressure": [
+        "1.0157"
+    ]
+}
