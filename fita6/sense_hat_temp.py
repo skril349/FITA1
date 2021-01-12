@@ -7,6 +7,13 @@ import paho.mqtt.publish as publish
 from sense_hat import SenseHat
 import time
 import subprocess
+import os
+
+def get_cpu_temp():
+  res = os.popen("vcgencmd measure_temp").readline()
+  t = float(res.replace("temp=","").replace("'C\n",""))
+  return(t)
+
 
 sense = SenseHat()
 value = 0
@@ -14,10 +21,12 @@ value = 0
 
 while True:
     value = value+1
-    temp = (sense.get_temperature_from_pressure())
+    #temp = (sense.get_temperature_from_pressure())
     pressure = sense.get_pressure()/1000
     humidity = sense.get_humidity()
-    
+    t = sense.get_temperature_from_humidity()
+    t_cpu = get_cpu_temp()
+    temp = t - ((t_cpu-t)/0.9)
     #cpu_temp = subprocess.check_output("vcgencmd measure_temp", shell=True)
     #print(cpu_temp)
     
